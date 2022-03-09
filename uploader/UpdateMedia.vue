@@ -121,7 +121,7 @@ import Loader from './loader/index.vue';
                     let formData = new FormData
                     let url = URL.createObjectURL(files[i])
                     formData.set('image', files[i])
-                    const {data} = await axios.post(this.server, formData)
+                    const {data} = await this.axios.post(this.server, formData)
                         
                     this.added_media.push({url:url, name:data.name, size:files[i].size, type:files[i].type});
                 }
@@ -154,13 +154,16 @@ import Loader from './loader/index.vue';
                 type: String,
                 default: '/api/upload',
             },
+            axios: {
+              type: Object,
+            },
             media_file_path:{
                 type: String,
                 required : true,
             }
         },
         mounted() {
-            axios.post(this.media_server)
+            this.axios.post(this.media_server)
                 .then(response=>{
                     this.saved_media=response.data.media
                     this.loading = false

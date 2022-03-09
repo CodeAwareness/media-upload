@@ -87,7 +87,7 @@
                     let formData = new FormData
                     let url = URL.createObjectURL(files[i])
                     formData.set('image', files[i])
-                    const {data} = await axios.post(this.server, formData)
+                    const {data} = await this.axios.post(this.server, formData)
                         
                     this.media.push({url:url, name:data.name, size:files[i].size, type:files[i].type});
                         
@@ -112,9 +112,12 @@
             server: {
                 type: String,
                 default: '/api/upload',
-            }
+            },
+            axios: {
+              type: Object,
+            },
         },
-        components:{Loader} 
+        components:{Loader},
     }
 </script>
 
