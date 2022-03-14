@@ -86,7 +86,7 @@ export default {
         let formData = new FormData
         let url = URL.createObjectURL(files[i])
         formData.set('image', files[i])
-        const {data} = await this.axios.post(this.server, formData, { 'Content-Type': files[i].type })
+        const {data} = await this.uploadFn(this.server, formData, { 'Content-Type': files[i].type })
 
         this.media.push({url:url, name:data.name, size:files[i].size, type:files[i].type});
 
@@ -112,8 +112,8 @@ export default {
       type: String,
       default: '/api/upload',
     },
-    axios: {
-      type: Object,
+    uploadFn: {
+      type: Function,
     },
   },
   components:{Loader},
@@ -151,14 +151,13 @@ export default {
 .image-container{
   display: inline-table !important;
   height: 90px !important;
-  width: 140px !important;
   display: flex !important;
 }
 .images-preview {
   border-radius: 5px !important;
   border: 1px solid #ccc !important;
   display: inline-block !important;
-  width: 140px !important;
+  width: auto;
   height: 88px !important;
   padding-top: -14px !important;
   transition: filter 0.1s linear;
@@ -185,8 +184,8 @@ export default {
   cursor: pointer !important;
   outline: inherit !important;
   position: relative !important;
-  left: -146px !important;
-  top: -25px !important;
+  left: 0;
+  top: -25px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
   width: 0px !important;
 
