@@ -33,7 +33,7 @@
 
           <!--IMAGES PREVIEW-->
           <div v-for="(image, index) in media" :key="index" class="image-container image-margin">
-            <img :src="image.url" alt=""  class="images-preview">
+            <img :src="image.blob" alt=""  class="images-preview">
             <button @click="remove(index)" class="close-btn" type="button">
               <svg 
                 class='times-icon'
@@ -72,51 +72,47 @@
 <script>
 import Loader from './loader/index.vue'
 export default {
-  data(){
-    return{
-      media:[],
-      loading:false,
+  data() {
+    return {
+      media: [],
+      loading: false,
     }
   },
-  methods:{
+  props: {
+    error:'',
+    server: '',
+    uploadFn: {
+      type: Function,
+    },
+  },
+  components:{Loader},
+  methods: {
     async fileChange(event){
       this.loading=true
       let files = event.target.files
       for(var i=0; i < files.length; i++){
-        let formData = new FormData
-        let url = URL.createObjectURL(files[i])
-        formData.set('image', files[i])
-        const {data} = await this.uploadFn(this.server, formData, { 'Content-Type': files[i].type })
+        let blob = URL.createObjectURL(files[i])
+        const url = (typeof this.server === 'function')
+          ? await this.server(files[i].name)
+          : `${this.server}/${files[i].name}`
+        const data = await this.uploadFn(url, files[i], { 'Content-Type': files[i].type })
 
-        this.media.push({url:url, name:data.name, size:files[i].size, type:files[i].type});
-
-
+        this.media.push({ blob, url, name: data.name, size: files[i].size, type: files[i].type});
       }
       this.loading=false
       this.media_emit()
     },
-    remove(index){
+    remove(index) {
       this.media.splice(index,1)
       this.media_emit()
     },
-    media_emit(){
+    media_emit() {
       this.$emit('media',this.media)
     }
   },
   mounted() {
     this.$emit('media',this.media)
   },
-  props:{
-    error:'',
-    server: {
-      type: String,
-      default: '/api/upload',
-    },
-    uploadFn: {
-      type: Function,
-    },
-  },
-  components:{Loader},
 }
 </script>
 
